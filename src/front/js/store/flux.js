@@ -1,6 +1,14 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
+			// Login and users
+			users: [],
+			accessToken: null,
+			isLogedIn: false,
+			userEmail: "",
+			userData: localStorage.getItem('user') ? localStorage.getItem('user') : '',
+			// products
+			products: {},
 			message: null,
 			demo: [
 				{
@@ -46,7 +54,30 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				//reset the global store
 				setStore({ demo: demo });
+			},
+
+			addProducts: async (dataToSend) => {
+				const url = `${process.env.BACKEND_URL}/api/admin/products`;
+				const options = {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${getStore().accessToken}`
+					},
+					body: JSON.stringify(dataToSend),
+				};
+
+				const response = await fetch(url, options);
+				if (!response.ok) {
+					console.log("Error");
+					return;
+				}
+				const newProduct = await response.json();
+				setStore({ products: [...getStore().products, newProduct], newProductId: newProduct.id });
+				
+				console.log(newProduct);
 			}
+
 		}
 	};
 };
