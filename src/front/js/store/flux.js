@@ -1,6 +1,11 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
+			// Admin
+			adminEmail: "",
+			adminName: "",
+			adminDepartment: "",
+			adminIsLogedIn: false,
 			// Login and users
 			users: [],
 			accessToken: null,
@@ -8,7 +13,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 			userEmail: "",
 			userData: localStorage.getItem('user') ? localStorage.getItem('user') : '',
 			// products
-			products: {},
+			products: [],
+			allergies: [],
+			ingredients: [],
+			suppliers: [],
 			message: null,
 			demo: [
 				{
@@ -56,6 +64,31 @@ const getState = ({ getStore, getActions, setStore }) => {
 				setStore({ demo: demo });
 			},
 
+			loginAdmin: async (dataToSend) => {
+				const uri = `${process.env.BACKEND_URL}/api/adminlogin`
+				const options = {
+					method: 'POST',
+					headers: {
+						'Content-type': 'application/json',
+					},
+					body: JSON.stringify(dataToSend)
+				}
+				const response = await fetch(uri, options)
+				if (!response.ok) {
+					console.log('Error: ', response.status, response.statusText);
+					return
+				}
+				const data = await response.json();
+				const access_token = data.access_token;
+				setStore({ accessToken: access_token })
+				setStore({ adminEmail: data.data.email })
+				setStore({ adminName: data.data.name })
+				setStore({ adminDepartment: data.department })
+				setStore({ adminIsLogedIn: true })
+				localStorage.setItem('token', data.access_token)
+				localStorage.setItem('admin', JSON.stringify(data.data))
+			},
+
 			addProducts: async (dataToSend) => {
 				const url = `${process.env.BACKEND_URL}/api/admin/products`;
 				const options = {
@@ -76,6 +109,25 @@ const getState = ({ getStore, getActions, setStore }) => {
 				setStore({ products: [...getStore().products, newProduct], newProductId: newProduct.id });
 				
 				console.log(newProduct);
+			},
+
+			getProducts: async () => {
+				const url = `${process.env.BACKEND_URL}/api/products`;
+				const options = {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				}
+
+				const response = await fetch(url, options)
+				if (!response.ok) {
+					console.log('Error: ', response.status, response.statusText);
+					return
+				}
+				const data = await response.json()
+				setStore({ products: data.results });
+			
 			}
 
 		}
