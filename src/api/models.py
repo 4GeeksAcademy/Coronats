@@ -100,6 +100,7 @@ class Products(db.Model):
 class Allergies(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    img = db.Column(db.String(), nullable=True)
 
     def __repr__(self):
         return f'<Allergies {self.name}>'
@@ -107,7 +108,8 @@ class Allergies(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "name": self.name }
+            "name": self.name,
+            "img": self.img }
 
 
 class Ingredients(db.Model):

@@ -36,7 +36,7 @@ export const LoginAdmin = () => {
       }
       actions.loginAdmin(dataToSend)
       handleReset()
-      navigate('/')
+      navigate('/admin/dashboard')
     }
   
 

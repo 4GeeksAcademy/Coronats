@@ -333,6 +333,8 @@ def admin_handle_allergies():
 @api.route("/admin/allergies/<int:allergy_id>", methods=["PUT" , "GET" , "DELETE"])
 @jwt_required()
 def admin_handle_allergies_id(allergy_id):
+    print(f"Received request to update allergy {allergy_id}")
+    print("Request data:", request.json)
     admin_info = get_jwt_identity()
     response_body = {}
     if admin_info['admin_id']:
